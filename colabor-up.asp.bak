@@ -1,0 +1,59 @@
+<!--#include virtual="/config/conn.asp"-->
+
+<%
+Response.Expires = -1
+if trim(request("item"))<>"" then
+	  editar
+else
+	  agregar
+end if	  
+
+
+Sub agregar
+			if  TRIM(request("vid"))<>"" then
+					strSQL="SELECT * from Empleados where ID="& TRIM(request("vid"))
+					response.write strSQL 
+					rsUpdateEntry.Open strSQL, adoCon
+
+					if len(trim(request("vpaterno")))<3 or len(trim(request("vnombres")))<2 then
+
+					            response.redirect("/index.asp?msg=nombre o paterno demasiado corto")
+
+					else
+							if rsUpdateEntry.EOF then
+											strSQL=  "INSERT INTO Empleados (ID,PATERNO,MATERNO,NOMBRES,FECHANACIMIENTO,FECHAINGRESO,CURP,RFC,NSS,SEXO,CLAVE_DEPTO,CLAVE_PUESTO,CLAVE_SUCURSAL,EMAIL_PERSONAL,CELULAR_PERSONAL) VALUES (" 
+											strSQL= strSQL  & TRIM(request("vid")) &",'"  & TRIM(UCase(request("vpaterno"))) &"','"  & TRIM(UCase(request("vmaterno"))) &"','"  & TRIM(UCase(request("vnombres"))) &"','"  & request("vnacimiento") &"','"  
+											strSQL= strSQL  & request("vingreso")  &"','"  & TRIM(UCase(request("vcurp"))) &"','"  & TRIM(UCase(request("vrfc"))) &"','"  & TRIM(request("vnss")) &"','"  & request("vsexo") &"','"   
+											strSQL= strSQL  & request("vdepto") &"','"  & request("vpuesto") &"','"  & request("vsucursal") &"','" & request("vemail") &"','" & request("vcelular") &"')"
+											response.write strSQL  
+											rsUpdateEntry2.Open strSQL, adoCon
+											
+											response.redirect("/index.asp?msg=el colaborador ha sido agregado")
+							else
+								      response.redirect("/index.asp?msg=el numero de colaborador ya se encuentra utilizado")
+								
+							end if
+
+					end if
+			else
+				 
+				   response.redirect("/index.asp?msg=el numero de colaborador esta en blanco")
+				
+			end if
+end sub
+
+
+
+Sub editar
+
+   strSQL=  "UPDATE Empleados "
+   strSQL= strSQL  & "SET PATERNO='"& TRIM(UCase(request("vpaterno")))  &"',MATERNO='"& TRIM(UCase(request("vmaterno"))) &"',NOMBRES='"& TRIM(UCase(request("vnombres"))) &"',CURP='"& TRIM(UCase(request("vcurp"))) &"',RFC='"& TRIM(UCase(request("vrfc"))) &"',NSS='"&  TRIM(request("vnss")) &"',"
+   strSQL= strSQL  & "SEXO='"& request("vsexo")  &"',CLAVE_DEPTO='"& request("vdepto") &"',CLAVE_PUESTO='"& request("vpuesto") &"',CLAVE_SUCURSAL='"& request("vsucursal") &"',"
+   strSQL= strSQL  & "EMAIL_PERSONAL='"& request("vemail")&"',CELULAR_PERSONAL='"& request("vcelular") &"' WHERE ID=" & request("item")
+   
+   response.write strSQL 
+   'rsUpdateEntry.Open strSQL, adoCon
+   'response.redirect("/index.asp?msg=el colaborador no. "& request("item") &" ha sido actualizado")
+  
+end sub	
+%>
